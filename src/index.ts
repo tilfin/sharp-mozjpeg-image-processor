@@ -1,10 +1,11 @@
 import fs from 'fs'
+import fsPromise from 'fs/promises'
 import os from 'os'
 import path from 'path'
 import crypto from 'crypto'
 const mkdirp = require('mkdirp')
-const imagemin = require('imagemin')
-const imageminMozjpeg = require('imagemin-mozjpeg')
+// @ts-ignore
+import { ImagePool } from '@squoosh/lib'
 
 import { convertStreamToArrangedFile, convertToScaledFile } from './resizer'
 
@@ -64,29 +65,32 @@ export class ImageProcessor {
     const maxOutImgInfo = await this.generateArrangedFile(fileStream, maxImgFilePath, maxImgInfo)
     const outImgInfos = [maxOutImgInfo]
 
+    // generating scaled images
     for (const imgInfo of sortedImgInfos) {
       const destFilePath = path.join(tmpDir, `${imgInfo.kind}.jpg`)
       outImgInfos.push(await this.generateScaledFile(maxImgFilePath, destFilePath, imgInfo))
     }
 
-    await this.generateOptimizedFiles(tmpDir, path.join(tmpDir, OPTIMIZED_DIR), quality)
-
-    // Deleting sized files and build results
+    // optimizing and deleting source files and build results
+    const imagePool = new ImagePool(os.cpus().length)
     const results: OutImageInfo[] = []
     for (const outImgInfo of outImgInfos) {
-      fs.unlink(outImgInfo.filePath, () => {}) // not wait
-
       const pathParts = outImgInfo.filePath.split('/')
       pathParts.splice(pathParts.length - 1, 0, OPTIMIZED_DIR)
+      const filePath = pathParts.join('/')
+
+      await this.generateOptimizedFile(outImgInfo.filePath, filePath, imagePool, quality)
+      fs.unlink(outImgInfo.filePath, () => {}) // not wait
 
       results.push({
         kind: outImgInfo.kind,
         format: 'jpeg',
         width: outImgInfo.width,
         height: outImgInfo.height,
-        filePath: pathParts.join('/')
+        filePath,
       })
     }
+    await imagePool.close()
     this.log({}, 'Deleted scaled and unoptimized image files')
 
     return results
@@ -107,11 +111,12 @@ export class ImageProcessor {
     return result
   }
 
-  async generateOptimizedFiles(srcDir: string, destDir: string, quality: number) {
-    await imagemin([`${srcDir}/*.jpg`], {
-      destination: destDir,
-      plugins: [imageminMozjpeg({ quality })]
-    })
-    this.log({}, 'Generated optimized image files')
+  async generateOptimizedFile(srcFilePath: string, destFilePath: string, imagePool: ImagePool, quality: number) {
+    const file = await fsPromise.readFile(srcFilePath)
+    const image = imagePool.ingestImage(file)
+    await image.encode({ mozjpeg: { quality }})
+    const encodedImage = (await image.encodedWith.mozjpeg).binary
+    fsPromise.writeFile(destFilePath, encodedImage)
+    this.log({ filePath: destFilePath }, 'Generated optimized image files')
   }
 }
