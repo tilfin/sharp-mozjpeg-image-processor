@@ -97,21 +97,21 @@ export class ImageProcessor {
   }
 
   // convert file stream to maximum rotation arraged file
-  async generateArrangedFile(fileStream: fs.ReadStream, destFilePath: string, imgInfo: ImageInfo) {
+  private async generateArrangedFile(fileStream: fs.ReadStream, destFilePath: string, imgInfo: ImageInfo) {
     const outImgInfo = await convertStreamToArrangedFile(fileStream, destFilePath, imgInfo.width, imgInfo.height)
     const result = { ...outImgInfo, kind: imgInfo.kind, filePath: destFilePath }
     this.log(result, 'Generated maximum scaled image file')
     return result
   }
 
-  async generateScaledFile(srcFilePath: string, destFilePath: string, imgInfo: ImageInfo) {
+  private async generateScaledFile(srcFilePath: string, destFilePath: string, imgInfo: ImageInfo) {
     const outImgInfo = await convertToScaledFile(srcFilePath, destFilePath, imgInfo.crop ?? false, imgInfo.width, imgInfo.height)
     const result = { ...outImgInfo, kind: imgInfo.kind, filePath: destFilePath }
     this.log(result, 'Generated scaled image file from maximum scaled one')
     return result
   }
 
-  async generateOptimizedFile(srcFilePath: string, destFilePath: string, imagePool: ImagePool, quality: number) {
+  private async generateOptimizedFile(srcFilePath: string, destFilePath: string, imagePool: ImagePool, quality: number) {
     const file = await fsPromise.readFile(srcFilePath)
     const image = imagePool.ingestImage(file)
     await image.encode({ mozjpeg: { quality }})
