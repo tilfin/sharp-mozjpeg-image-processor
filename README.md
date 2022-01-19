@@ -1,5 +1,9 @@
 # sharp-mozjpeg-image-processor
 
+[![npm version](https://img.shields.io/npm/v/sharp-mozjpeg-image-processor.svg)](https://npmjs.org/package/sharp-mozjpeg-image-processor)
+[![Node](https://img.shields.io/node/v/dynamo-processor.svg)]()
+[![Build & Test](https://github.com/tilfin/sharp-mozjpeg-image-processor/actions/workflows/ci.yml/badge.svg)](https://github.com/tilfin/sharp-mozjpeg-image-processor/actions/workflows/ci.yml)
+
 Generates scaled (by sharp) and optimized (by mozjpeg) image files from a source image file
 
 ## Install
