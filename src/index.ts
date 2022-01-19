@@ -1,5 +1,4 @@
 import fs from 'fs'
-import fsPromise from 'fs/promises'
 import os from 'os'
 import path from 'path'
 import crypto from 'crypto'
@@ -140,11 +139,11 @@ export class ImageProcessor {
   }
 
   private async generateOptimizedFile(srcFilePath: string, destFilePath: string, imagePool: ImagePool, quality: number) {
-    const file = await fsPromise.readFile(srcFilePath)
+    const file = await fs.promises.readFile(srcFilePath)
     const image = imagePool.ingestImage(file)
     await image.encode({ mozjpeg: { quality }})
     const encodedImage = (await image.encodedWith.mozjpeg).binary
-    fsPromise.writeFile(destFilePath, encodedImage)
+    fs.promises.writeFile(destFilePath, encodedImage)
     this.log({ filePath: destFilePath }, 'Generated optimized image files')
   }
 }
