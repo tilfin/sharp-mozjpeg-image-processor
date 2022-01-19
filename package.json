@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "echo notest"
+    "test": "node test/index.test.js"
   },
   "keywords": [
     "image",
