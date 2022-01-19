@@ -34,6 +34,34 @@ export interface OutImageInfo {
   filePath: string
 }
 
+/**
+ * https://github.com/GoogleChromeLabs/squoosh/tree/dev/libsquoosh
+ * Important! Make sure to only create 1 ImagePool when performing parallel image processing.
+ */
+class ImagePoolManager {
+  private pool: ImagePool | null = null
+  private refCount: number = 0
+
+  constructor(private workers: number) {}
+
+  async retain(): Promise<ImagePool> {
+    if (!this.pool) {
+      this.pool = new ImagePool(this.workers)
+    }
+    this.refCount++
+    return this.pool
+  }
+
+  async release(): Promise<void> {
+    this.refCount--
+    if (this.refCount === 0) {
+      await this.pool.close()
+      this.pool = null
+    }
+  }
+}
+const imagePoolManager = new ImagePoolManager(os.cpus().length)
+
 export class ImageProcessor {
   private tmpRootDir: string
   private log: LogFunction
@@ -72,7 +100,7 @@ export class ImageProcessor {
     }
 
     // optimizing and deleting source files and build results
-    const imagePool = new ImagePool(os.cpus().length)
+    const imagePool = await imagePoolManager.retain()
     const results: OutImageInfo[] = []
     for (const outImgInfo of outImgInfos) {
       const pathParts = outImgInfo.filePath.split('/')
@@ -90,7 +118,7 @@ export class ImageProcessor {
         filePath,
       })
     }
-    await imagePool.close()
+    await imagePoolManager.release()
     this.log({}, 'Deleted scaled and unoptimized image files')
 
     return results
