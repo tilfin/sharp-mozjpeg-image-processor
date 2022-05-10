@@ -143,7 +143,7 @@ export class ImageProcessor {
     const image = imagePool.ingestImage(file)
     await image.encode({ mozjpeg: { quality }})
     const encodedImage = (await image.encodedWith.mozjpeg).binary
-    fs.promises.writeFile(destFilePath, encodedImage)
+    await fs.promises.writeFile(destFilePath, encodedImage)
     this.log({ filePath: destFilePath }, 'Generated optimized image files')
   }
 }
