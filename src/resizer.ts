@@ -17,7 +17,7 @@ export async function convertStreamToArrangedFile(srcFileStream: fs.ReadStream, 
                         .rotate()
                         .resize(maxWidth, maxHeight, { fit: 'inside', withoutEnlargement: false })
                         .on('info', (info: any) => { imgInfo = info })
-                        .jpeg()
+                        .jpeg({ mozjpeg: true })
   const fileWriter = fs.createWriteStream(destFilePath, { encoding: undefined })
 
   await promisedLifestream([
@@ -32,6 +32,6 @@ export async function convertStreamToArrangedFile(srcFileStream: fs.ReadStream, 
 export async function convertToScaledFile(srcFilePath: string, destFilePath: string, crop: boolean, maxWidth: number, maxHeight: number): Promise<OutFileInfo> {
   return sharp(srcFilePath)
     .resize({ width: maxWidth, height: maxHeight, fit: crop ? 'cover' : 'inside' })
-    .toFormat('jpeg')
+    .jpeg({ mozjpeg: true })
     .toFile(destFilePath)
 }
