@@ -29,10 +29,18 @@ export interface OutImageInfo {
   filePath: string
 }
 
+/**
+ * sharp-mozjpeg-image-processor
+ * main class
+ */
 export class ImageProcessor {
   private tmpRootDir: string
   private log: LogFunction
 
+  /**
+   * @param tmpDir temporary directory
+   * @param log Logging function
+   */
   constructor(tmpDir?: string, log?: LogFunction) {
     this.tmpRootDir = tmpDir ?? os.tmpdir()
     this.log = log ?? ((ctx: any, msg: string) => {
@@ -41,8 +49,12 @@ export class ImageProcessor {
   }
 
   /**
-   * ./tmp/workNNNNN/
-   *    <here resized files>
+   * execute generating image files from source file stream
+   * 
+   * @param fileStream source image file stream
+   * @param imageInfos generating image file infos 
+   * @param quality jpeg quality 0~100
+   * @returns generated image file infos
    */
   async execute(fileStream: fs.ReadStream, imageInfos: ImageInfo[], quality = 80): Promise<OutImageInfo[]> {
     const tmpDir = path.join(this.tmpRootDir, 'work' + crypto.randomBytes(8).readUInt32LE(0))
