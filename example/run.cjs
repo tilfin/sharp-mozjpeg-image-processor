@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { ImageProcessor } = require('../lib')
+const { ImageProcessor } = require('sharp-mozjpeg-image-processor')
 
 const processor = new ImageProcessor()
 
