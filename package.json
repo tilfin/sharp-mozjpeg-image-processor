@@ -1,6 +1,6 @@
 {
   "name": "sharp-mozjpeg-image-processor",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "Scaled and optimized JPEG image file generater powered by sharp and mozjpeg",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
@@ -42,7 +42,6 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
-    "promised-lifestream": "^0.7.0",
     "sharp": "^0.33.5"
   }
 }
