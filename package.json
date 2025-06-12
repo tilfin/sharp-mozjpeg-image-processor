@@ -3,11 +3,13 @@
   "version": "0.7.1",
   "description": "Scaled and optimized JPEG image file generater powered by sharp and mozjpeg",
   "main": "lib/index.js",
+  "module": "lib/index.mjs",
   "types": "./lib/index.d.ts",
   "exports": {
     ".": {
+      "require": "./lib/index.js",
       "import": "./lib/index.mjs",
-      "require": "./lib/index.js"
+      "types": "./lib/index.d.ts"
     }
   },
   "files": [
@@ -16,6 +18,14 @@
   "scripts": {
     "build": "tsc",
     "test": "node test/index.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tilfin/sharp-mozjpeg-image-processor.git"
+  },
+  "homepage": "https://github.com/tilfin/sharp-mozjpeg-image-processor",
+  "bugs": {
+    "url": "https://github.com/tilfin/sharp-mozjpeg-image-processor/issues"
   },
   "keywords": [
     "image",
