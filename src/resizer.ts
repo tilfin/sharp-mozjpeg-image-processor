@@ -1,6 +1,6 @@
 import fs from 'fs'
+import { pipeline } from 'stream/promises'
 const sharp = require('sharp')
-const promisedLifestream = require('promised-lifestream')
 
 export interface OutFileInfo {
   format: 'jpeg'
@@ -20,11 +20,11 @@ export async function convertStreamToArrangedFile(srcFileStream: fs.ReadStream, 
                         .jpeg({ mozjpeg: true })
   const fileWriter = fs.createWriteStream(destFilePath, { encoding: undefined })
 
-  await promisedLifestream([
+  await pipeline(
     srcFileStream,
     largeResizer,
-    fileWriter,
-  ])
+    fileWriter
+  )
 
   return imgInfo!
 }
