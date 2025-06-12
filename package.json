@@ -17,7 +17,8 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "node test/index.test.js"
+    "test": "node test/index.test.js",
+    "test:esm": "node test/index.test.mjs"
   },
   "repository": {
     "type": "git",
