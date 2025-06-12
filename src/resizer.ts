@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { pipeline } from 'node:stream/promises'
+import { pipeline } from 'stream/promises'
 const sharp = require('sharp')
 
 export interface OutFileInfo {
